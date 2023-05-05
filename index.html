@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <p id="watchdisplay"></p>
+    <button id="startpause" onclick="startandpause()">Start</button>
+    <button id="lapstop" style="display: none;" onclick="lapandstop()">Stop</button>
+    <div id="laps"></div>
+    <script>
+        var interval
+        var milliseconds = 0
+        function startandpause(){
+            display = document.getElementById("watchdisplay")
+            thisbtn = document.getElementById("startpause")
+            otherbtn = document.getElementById("lapstop")
+            if(typeof(interval) == 'undefined'){
+                thisbtn.innerHTML = "Pause"
+                otherbtn.innerHTML = "Lap"
+                otherbtn.style.display = "block"
+                interval = setInterval(()=>{
+                milliseconds += 4;
+                display.innerHTML = Math.floor(milliseconds/60000) + ":" + Math.floor(((milliseconds/1000))%60) + "<span class='smoll'>" + String((((milliseconds/1000))%60).toFixed(3)).split('.')[String((((milliseconds/1000))%60).toFixed(3)).split('.').length - 1] + "</span>"
+            }, 1)}else{
+                otherbtn.innerHTML = "Stop"
+                clearInterval(interval)
+                interval = undefined
+                thisbtn.innerHTML = "Start"
+            }
+        }
+        var totallaps = 0;
+        function lapandstop(){
+            if(typeof(interval) == 'undefined'){
+                thisbtn.innerHTML = "Start"
+                otherbtn.innerHTML = "Stop"
+                otherbtn.style.display = "none"
+                clearInterval(interval)
+                display.innerHTML = "0:0.0"
+                interval = undefined
+                lapselem.innerHTML = ''
+            }else{
+                lapselem = document.getElementById("laps")
+                lapselem.innerHTML += "<p>"+ totallaps +" "+display.innerHTML +"</p>"
+                totallaps++
+            }
+        }
+    </script>
+</body>
+</html>
