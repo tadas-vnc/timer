@@ -4,8 +4,120 @@ body{
 
 p{
     color: white;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 .smoll{
-    font-size: 0.7em;
+    font-size: 0.6em;
+}
+
+.center{
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: xx-large;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+  }
+  
+  #stopwatchwrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 1s ease-in-out;
+    position: relative;
+    left: -100%;
+  }
+  
+  .content {
+    flex: 1;
+  }
+#laps{
+    overflow: scroll;
+    font-size: larger;
+    text-align: center;
+    overflow-x: hidden;
+}
+.blink {
+    animation: blinker 1s linear infinite;
+  }
+  
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }
+#watchdisplay{
+}
+
+.buttons{
+    display: inline-flex;
+    justify-content: center;
+    height: 5%;
+}
+
+.buttons > button:hover{
+    text-shadow: -1px -1px 0 #ffffff, 1px -1px rgb(255, 255, 255), -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
+    color:#000;
+    border-color: white;
+}
+
+@media (orientation: landscape) {
+    .buttons > button{
+        width: 10%;
+    }
+}
+
+@media (orientation: portrait) {
+    .buttons > button{
+        width: 30%;
+    }
+}
+
+.buttons > button{
+    display: inline;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    color: white;
+    background-color: transparent;
+    height: 100%;
+    font-size: larger;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    transition: all 500ms ease-in-out;
+}
+
+.linklabel{
+    color: rgb(126, 126, 255);
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-align: center;
+}
+
+#timerwrapper{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top:0px;
+    left: 100%;
+    transition: all 1s ease-in-out;
+}
+
+.nomargin{
+    margin: 0;
+}
+
+#yetanotherwrapper{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 1s ease-in-out;
+    position: relative;
+}
+
+#secondadd, #secondunadd{
+    transition: all 1s ease-in-out;
 }
