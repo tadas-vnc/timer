@@ -8,25 +8,44 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <p id="watchdisplay"></p>
+    <div id="stopwatchwrapper">
+    <div class="buttons"><button style="width: fit-content;" onclick="changetimer()">Switch to timer</button></div>
+    <div class="center"><p id="watchdisplay">00:00:00.<span class="smoll">000</span></p></div>
+    <div class="buttons">
     <button id="startpause" onclick="startandpause()">Start</button>
-    <button id="lapstop" style="display: none;" onclick="lapandstop()">Stop</button>
+    <button id="lapstop" style="display: none;" onclick="lapandstop()">Stop</button></div>
     <div id="laps"></div>
     <script>
         var interval
         var milliseconds = 0
+        var starttime
+        var whenpaused
         function startandpause(){
             display = document.getElementById("watchdisplay")
             thisbtn = document.getElementById("startpause")
             otherbtn = document.getElementById("lapstop")
             if(typeof(interval) == 'undefined'){
+                console.log("start pressed")
                 thisbtn.innerHTML = "Pause"
                 otherbtn.innerHTML = "Lap"
                 otherbtn.style.display = "block"
+                if (typeof(starttime) == 'undefined'){
+                starttime = new Date().getTime()}else{
+                    starttime += (new Date().getTime() - whenpaused)
+                }
                 interval = setInterval(()=>{
-                milliseconds += 4;
-                display.innerHTML = Math.floor(milliseconds/60000) + ":" + Math.floor(((milliseconds/1000))%60) + "<span class='smoll'>" + String((((milliseconds/1000))%60).toFixed(3)).split('.')[String((((milliseconds/1000))%60).toFixed(3)).split('.').length - 1] + "</span>"
+                const timeDifference = new Date().getTime() - starttime;
+                const hours = Math.floor(timeDifference / 3600000);
+                const minutes = Math.floor((timeDifference % 3600000) / 60000);
+                const seconds = Math.floor((timeDifference % 60000) / 1000); 
+                const milliseconds = timeDifference % 1000; 
+                const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}<span class='smoll'>${milliseconds.toString().padStart(3, '0')}</span>`; 
+                //console.log(timeString); 
+                display.innerHTML = timeString;
+                //display.innerHTML = minutes + ":" + seconds + "<span class='smoll'>" + (milliseconds%1000) + "</span>"
             }, 1)}else{
+                console.log("pause pressed")
+                whenpaused = new Date().getTime()
                 otherbtn.innerHTML = "Stop"
                 clearInterval(interval)
                 interval = undefined
@@ -40,15 +59,131 @@
                 otherbtn.innerHTML = "Stop"
                 otherbtn.style.display = "none"
                 clearInterval(interval)
-                display.innerHTML = "0:0.0"
+                display.innerHTML = "00:00:00.<span class=\"smoll\">000</span>"
                 interval = undefined
+                starttime = undefined
                 lapselem.innerHTML = ''
+                totallaps = 0;
             }else{
                 lapselem = document.getElementById("laps")
-                lapselem.innerHTML += "<p>"+ totallaps +" "+display.innerHTML +"</p>"
+                lapselem.innerHTML += "<p>"+ totallaps +": "+display.innerHTML +"</p>"
                 totallaps++
             }
         }
-    </script>
+
+        function changetimer(){
+            document.getElementById("stopwatchwrapper").style.left = "-100%"
+            document.getElementById("timerwrapper").style.left = "0%"
+        }
+
+        document.getElementById("stopwatchwrapper").style.left = "0%"
+    </script></div>
+
+    <div id="timerwrapper">
+        <div id="yetanotherwrapper">
+            <div class="buttons"><button style="width:fit-content" onclick="changestopwatch()">Switch to Stopwatch</button></div>
+    <div class="center" id="secondadd"><p class="nomargin"><a class="linklabel" href="javascript:upd(3600)">⬆⬆</a>:<a class="linklabel" href="javascript:upd(60);">⬆⬆</a>:<a class="linklabel" href="javascript:upd(1);">⬆⬆</a></p></div>
+    <div class="center"><p class="nomargin" id="timedisplay">00:00:00</p></div>
+    <div class="center" id="secondunadd"><p class="nomargin"><a class="linklabel" href="javascript:upd(-3600)">⬇⬇</a>:<a class="linklabel" href="javascript:upd(-60);">⬇⬇</a>:<a class="linklabel" href="javascript:upd(-1);">⬇⬇</a></p></div>
+    <div class="buttons">
+        <button id="startandpause" onclick="startpausetimer()">Start</button>
+        <button id="stopandreset" onclick="stopandreset()">Reset</button></div>
+    <dialog id="finishdialog" style="background: rgba(0, 0, 0, 0.568); transition: all 1s ease-in-out; opacity: 0%;" open><p id=""></p></dialog>
+    <script>var seconds=0;
+    var inputenabled = true
+    var whenfinish = 0
+    var timerinterval
+    var secondsithadoriginally 
+    var fullystopped = true
+    function upd(sec, frombutton = true){
+        if(inputenabled && frombutton || !frombutton){
+        seconds += sec;
+        if(seconds<0){
+            seconds = 0
+        }
+        document.getElementById("timedisplay").innerHTML = formatTime(seconds)}
+    }
+
+    function formatTime(seconds) {
+        let hours = Math.floor(seconds / (60 * 60));
+        let minutes = Math.floor((seconds % (60 * 60)) / 60);
+        let secs = seconds % 60;
+        return `${formatNumber(hours)}:${formatNumber(minutes)}:${formatNumber(secs)}`;
+    }
+
+    function formatNumber(num) {
+        return num.toString().padStart(2, '0');
+    }
+    var alarm = new Audio("https://cdn.discordapp.com/attachments/1102677795479498863/1105584247462449173/Ding_Sound_Effect_128_kbps.mp3")
+    alarm.loop = true;
+    function startpausetimer(){
+        if(typeof(timerinterval) == 'undefined'){
+        console.log("start pressed")
+        if(seconds == 0){
+            return
+        }
+        if(fullystopped){
+        secondsithadoriginally = seconds}
+        fullystopped = false
+        document.getElementById("startandpause").innerHTML = "Pause"
+        document.getElementById("stopandreset").innerHTML = "Stop"
+        inputenabled = false;
+        document.querySelector("#secondadd").style.opacity = '0%'
+        document.querySelector("#secondunadd").style.opacity = '0%'
+        timerinterval = setInterval(()=>{
+            upd(-1, false)
+            if(seconds == 0){
+                var dialog = document.querySelector("#finishdialog")
+                dialog.setAttribute("open", true)
+                dialog.style.opacity = "100%"
+                alarm.play();
+                dialog.childNodes[0].innerHTML = "Time's up! your " + Math.floor(secondsithadoriginally / 3600) + " hours, " + Math.floor(secondsithadoriginally / 60)%60 + " minutes and " + secondsithadoriginally%60 + " seconds just passed." + '<div class="buttons" style="display:flex"><button onclick="complete(this)">OK</button></div>'
+                
+                
+            }
+        }, 1000)
+        }else{
+            clearInterval(timerinterval)
+            timerinterval = undefined
+            document.getElementById("startandpause").innerHTML = "Start"
+            document.getElementById("stopandreset").innerHTML = "Reset"
+            document.querySelector("#secondadd").style.opacity = '100%'
+            document.querySelector("#secondunadd").style.opacity = '100%'
+            inputenabled = true
+        }
+    }
+
+    function complete(btn){
+        clearInterval(timerinterval)
+        alarm.pause(); 
+        alarm.currentTime = 0;
+        btn.parentNode.parentNode.parentNode.style.opacity = '0%'
+        setTimeout(()=>{btn.parentNode.parentNode.parentNode.removeAttribute('open');stopandreset();}, 1000);
+    }
+
+    function stopandreset(stop = false){
+        if(typeof(timerinterval) != 'undefined' || stop == true){
+            clearInterval(timerinterval)
+            timerinterval = undefined
+            document.getElementById("startandpause").innerHTML = "Start"
+            document.getElementById("stopandreset").innerHTML = "Reset"
+            document.querySelector("#secondadd").style.opacity = '100%'
+            document.querySelector("#secondunadd").style.opacity = '100%'
+            inputenabled = true
+            seconds = secondsithadoriginally
+            upd(0, false)
+            fullystopped = true
+        }else{
+            seconds = 0
+            upd(0, false)
+        }
+    }
+
+    function changestopwatch(){
+            document.getElementById("stopwatchwrapper").style.left = "0%"
+            document.getElementById("timerwrapper").style.left = "100%"
+        }
+    </script></div>
+    </div>
 </body>
 </html>
